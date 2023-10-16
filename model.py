@@ -14,12 +14,16 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 from modules.RWKV5Block import RWKV5Block
 
 class RWKV5Classifier(pl.LightningModule):
-    def __init__(self, vocab_size, n_embd=256, n_layer=6, head_count=8, dim_ffn=256, dim_att=256, output_dim=6):
+    def __init__(self, vocab_size, n_embd=256, n_layer=6, head_count=8, dim_ffn=256, dim_att=256, output_dim=6, training=True):
         super(RWKV5Classifier, self).__init__()
         
         self.automatic_optimization = False
         
         self.emb = nn.Embedding(vocab_size, n_embd)
+        
+        # if training default embedding
+        if training:
+            self.emb.weight = nn.Parameter(torch.randn(vocab_size, n_embd) * math.sqrt(1 / vocab_size))
         
         self.blocks = nn.ModuleList([RWKV5Block(n_embd, head_count, dim_att, dim_ffn, n_layer, i) for i in range(n_layer)])
         
@@ -94,10 +98,15 @@ class RWKV5Classifier(pl.LightningModule):
         labels = labels.float()
         # labels = labels.reshape(40, 1, -1)
         # labels = labels.repeat(1, outputs.shape[1], 1)
+        mask = (labels != 0).float()
         
         # get last output
         last_output = outputs[:, -1, :]
         
         # Compute MSE loss
-        loss = F.mse_loss(last_output.reshape(-1), labels.reshape(-1))
+        loss = F.mse_loss(last_output, labels, reduction='none')
+        
+        # Only count non-masked elements
+        loss = (loss * mask).sum() / mask.sum()
+        
         return loss

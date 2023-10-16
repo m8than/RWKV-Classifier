@@ -14,9 +14,10 @@ class TokenLabelDataset(Dataset):
     
     def __getitem__(self, idx):
         tokenized_text = self.tokenizer.encode(self.texts[idx]).ids
+        label_value = 1.0 #28 / len(self.labels[idx])
         label_output = [0.0] * 28
-        for id in self.labels:
-            label_output[id] = 1.0
+        for id in self.labels[idx]:
+            label_output[id] = label_value
         
         x = torch.tensor(tokenized_text)
         y = torch.tensor(label_output)

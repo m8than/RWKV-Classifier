@@ -13,10 +13,10 @@ tokenizer = tokenizers.Tokenizer.from_file(cur_dir + "/20B_tokenizer.json")
 
 input_output_pairs = []
 
-with open(cur_dir + '/setfit_emotion.jsonl', 'r') as f:
+with open(cur_dir + '/go_emotion_simplified.jsonl', 'r') as f:
     for line in f:
         json_obj = json.loads(line)
-        input_output_pairs.append((json_obj['text'], json_obj['label']))
+        input_output_pairs.append((json_obj['text'], json_obj['labels']))
         
 # 6 labels
 # 0: sadness
@@ -90,7 +90,7 @@ dataset = TokenLabelDataset(df['text'].values.tolist(), df['output'].values.toli
 dataloader = DataLoader(dataset, batch_size=batch_size, collate_fn=my_collate_fn, shuffle=True, num_workers=16)
 
 # initti
-model = RWKV5Classifier(tokenizer.get_vocab_size(), n_embd=256, n_layer=6, head_count=8, dim_ffn=256, dim_att=256, output_dim=6)
+model = RWKV5Classifier(tokenizer.get_vocab_size(), n_embd=256, n_layer=6, head_count=8, dim_ffn=256, dim_att=256, output_dim=28)
 #model.load_state_dict(torch.load(cur_dir + '/model.pt', map_location=torch.device('cuda')))
 # opt = SophiaG(model.parameters(), lr=5e-5, betas=(0.965, 0.99), rho = 0.01, weight_decay=1e-1)
 
