@@ -41,6 +41,7 @@ class RWKV5Classifier(pl.LightningModule):
         
         # output last
         # x = x[:, -1, :]
+        x = F.softmax(x, dim=-1)
 
         return x
     

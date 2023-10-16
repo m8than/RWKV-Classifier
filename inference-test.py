@@ -22,7 +22,24 @@ list_out = output.tolist()[0]
 # label output
 labels = ['sadness', 'joy', 'love', 'anger', 'fear', 'surprise']
 
+print("Sequence output:")
 # list to label dictionary
 dict_out = dict(zip(labels, list_out))
-
 print(dict_out)
+
+
+last_list_out = []
+# get last output from each list_out
+for i, values in enumerate(list_out):
+    last_list_out.append(values[-1])
+
+# softmax last_list_out
+last_list_out = np.exp(last_list_out) / np.sum(np.exp(last_list_out))
+    
+print("Whole output:")
+
+# softmax values
+# list to label dictionary
+last_dict_out = dict(zip(labels, last_list_out))
+
+print(last_dict_out)

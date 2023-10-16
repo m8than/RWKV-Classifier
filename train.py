@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import tokenizers
 
+torch.set_float32_matmul_precision('high')
 
 cur_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -111,7 +112,7 @@ if __name__ == '__main__':
     
     checkpoint_callback = ModelCheckpoint(
         monitor='train_loss',  # Specify the metric to monitor
-        dirpath=cur_dir + 'models',  # Specify the directory to save the models
+        dirpath=cur_dir + '/models',  # Specify the directory to save the models
         filename='model-{epoch:02d}-{val_loss:.2f}',  # Specify the filename pattern
         save_top_k=1,  # Save the best model based on the monitored metric
         mode='min'  # Specify the direction of improvement for the monitored metric
